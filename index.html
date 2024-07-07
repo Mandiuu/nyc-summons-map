@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NYC Data Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 90vh;
+            background-color: #f0f0f0;
+        }
+        .info { 
+            padding: 6px 8px; 
+            font: 14px/16px Arial, Helvetica, sans-serif; 
+            background: white; 
+            background: rgba(255, 255, 255, 0.8); 
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); 
+            border-radius: 5px; 
+        }
+        .info h4 { 
+            margin: 0 0 5px; 
+            color: #777; 
+        }
+        .legend { 
+            text-align: left; 
+            line-height: 18px; 
+            color: #555; 
+        }
+        .legend i { 
+            width: 18px; 
+            height: 18px; 
+            float: left; 
+            margin-right: 8px; 
+            opacity: 0.7; 
+        }
+        select {
+            margin: 10px;
+            padding: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <select id="data-filter" onchange="updateMap()">
+        <option value="alcohol_drugs">Alcohol/Drugs</option>
+        <option value="weapons">Weapons</option>
+        <option value="bike">Bike</option>
+        <option value="disobey_business">Disobey Business</option>
+        <option value="disorderly_behavior">Disorderly Behavior</option>
+    </select>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="map.js"></script> <!-- Link to your JavaScript file -->
+</body>
+</html>
