@@ -6,75 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f0f0; /* Set body background color */
-            margin: 0;
-            padding: 0;
-        }
-        #map {
-            height: 85vh; /* Increase map height */
-            background-color: #f0f0f0; /* Set map background color */
-        }
-        .info { 
-            padding: 6px 8px; 
-            font: 14px/16px Arial, Helvetica, sans-serif; 
-            background: white; 
-            background: rgba(255, 255, 255, 0.8); 
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); 
-            border-radius: 5px; 
-        }
-        .info h4 { 
-            margin: 0 0 5px; 
-            color: #777; 
-        }
-        .legend { 
-            text-align: left; 
-            line-height: 18px; 
-            color: #555; 
-        }
-        .legend i { 
-            width: 18px; 
-            height: 18px; 
-            float: left; 
-            margin-right: 8px; 
-            opacity: 0.7; 
-        }
-        select {
-            margin: 5px;
-            padding: 5px;
-            font-size: 14px;
-            background-color: #f0f0f0; /* Set dropdown background color */
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        #search-box {
-            margin: 5px;
-            padding: 5px;
-            font-size: 14px;
-            width: 200px;
-            background-color: #f0f0f0; /* Set search box background color */
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        #search-button {
-            margin: 5px;
-            padding: 5px;
-            font-size: 14px;
-            background-color: #f0f0f0; /* Set button background color */
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        h1 {
-            text-align: center;
-            font-size: 24px;
-            margin: 10px 0;
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f0f0; /* Set header background color */
-            padding: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
     <h1>NYC 2023 SUMMONS BY PRECINCT</h1>

@@ -5,6 +5,48 @@ var map = L.map('map', {
     layers: [] // No base layers
 });
 
+// GeoJSON data for the boundary line between Queens and Brooklyn
+var boundaryGeoJson = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [-73.9504, 40.6342],
+                    [-73.9385, 40.6400],
+                    [-73.9226, 40.6539],
+                    [-73.9179, 40.6697],
+                    [-73.9085, 40.6794],
+                    [-73.8973, 40.6960],
+                    [-73.8865, 40.7038],
+                    [-73.8757, 40.7097],
+                    [-73.8587, 40.7241],
+                    [-73.8512, 40.7343]
+                ]
+            },
+            "properties": {
+                "name": "Queens-Brooklyn Boundary"
+            }
+        }
+    ]
+};
+
+// Function to style the boundary line
+function styleBoundary(feature) {
+    return {
+        color: 'black',
+        weight: 5,
+        opacity: 1
+    };
+}
+
+// Add the boundary line to the map
+L.geoJson(boundaryGeoJson, {
+    style: styleBoundary
+}).addTo(map);
+
 // Data lookup object
 var dataLookup = {};
 var filter = 'alcohol_drugs'; // Default filter set to Alcohol/Drugs
