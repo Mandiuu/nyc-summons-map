@@ -84,6 +84,11 @@ function getColor(d, filter) {
     }
 }
 
+// Function to capitalize the first letter of each word
+function formatFilterName(filter) {
+    return filter.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase() });
+}
+
 // Highlight feature on mouseover
 function highlightFeature(e) {
     var layer = e.target;
@@ -104,7 +109,7 @@ function highlightFeature(e) {
 // Reset highlight on mouseout
 function resetHighlight(e) {
     geojson.resetStyle(e.target);
-    info.update();
+    info.update(); // Clear the info box
 }
 
 // Zoom to feature on click
@@ -149,17 +154,25 @@ function onEachFeature(feature, layer) {
     var precinct = feature.properties.precinct ? String(feature.properties.precinct).trim() : '';
     console.log('Processing precinct:', precinct); // Debugging
     var data = dataLookup[precinct] || {};
+
+    // Add data to feature properties
+    for (var key in data) {
+        if (data.hasOwnProperty(key)) {
+            feature.properties[key] = data[key];
+        }
+    }
+
     var rankings = calculateRankings(); // Calculate rankings based on the current filter
 
     // Create popup content with the selected filter's data and ranking
     var value = data[filter] || 'No data';
     var rank = rankings[precinct] || 'N/A';
 
-    var popupContent = '<b>Precinct ' + precinct + '</b><br />' +
-        filter.replace(/_/g, ' ') + ': ' + value + '<br />' +
-        'Ranking: ' + rank;
+    var formattedFilterName = formatFilterName(filter) + ' summons';
 
-    console.log('Popup content:', popupContent); // Debugging
+    var popupContent = '<b>Precinct ' + precinct + '</b><br />' +
+        formattedFilterName + ': ' + value + '<br />' +
+        'Ranking: ' + rank;
 
     layer.on({
         mouseover: function(e) {
@@ -229,14 +242,14 @@ info.onAdd = function(map) {
 info.update = function(props) {
     this._div.innerHTML = '<h4>NYC Data</h4>' + (props ?
         '<b>Precinct ' + props.precinct + '</b><br />' +
-        'Alcohol/Drugs: ' + (props.alcohol_drugs || 'No data') +
-        '<br />Animals: ' + (props.animals || 'No data') +
-        '<br />Bike: ' + (props.bike || 'No data') +
-        '<br />Disobey Business: ' + (props.disobey_business || 'No data') +
-        '<br />Disorderly Behavior: ' + (props.disorderly_behavior || 'No data') +
-        '<br />General Illegal: ' + (props.general_illegal || 'No data') +
-        '<br />Noise: ' + (props.noise || 'No data') +
-        '<br />Weapons: ' + (props.weapons || 'No data')
+        'Alcohol/Drugs summons: ' + (props.alcohol_drugs || 'No data') + '<br />' +
+        'Animals summons: ' + (props.animals || 'No data') + '<br />' +
+        'Bike summons: ' + (props.bike || 'No data') + '<br />' +
+        'Disobey Business summons: ' + (props.disobey_business || 'No data') + '<br />' +
+        'Disorderly Behavior summons: ' + (props.disorderly_behavior || 'No data') + '<br />' +
+        'General Illegal summons: ' + (props.general_illegal || 'No data') + '<br />' +
+        'Noise summons: ' + (props.noise || 'No data') + '<br />' +
+        'Weapons summons: ' + (props.weapons || 'No data')
         : 'Hover over a precinct');
 };
 
