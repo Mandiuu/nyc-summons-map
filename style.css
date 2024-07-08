@@ -1,12 +1,12 @@
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #f0f0f0; /* Set body background color */
+    background-color: #f0f0f0;
     margin: 0;
     padding: 0;
 }
 #map {
-    height: 85vh; /* Increase map height */
-    background-color: #f0f0f0; /* Set map background color */
+    height: 85vh;
+    background-color: #f0f0f0;
 }
 .info { 
     padding: 6px 8px; 
@@ -36,7 +36,7 @@ select {
     margin: 5px;
     padding: 5px;
     font-size: 14px;
-    background-color: #f0f0f0; /* Set dropdown background color */
+    background-color: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
@@ -45,7 +45,7 @@ select {
     padding: 5px;
     font-size: 14px;
     width: 200px;
-    background-color: #f0f0f0; /* Set search box background color */
+    background-color: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
@@ -53,7 +53,7 @@ select {
     margin: 5px;
     padding: 5px;
     font-size: 14px;
-    background-color: #f0f0f0; /* Set button background color */
+    background-color: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
@@ -62,6 +62,6 @@ h1 {
     font-size: 24px;
     margin: 10px 0;
     font-family: 'Roboto', sans-serif;
-    background-color: #f0f0f0; /* Set header background color */
+    background-color: #f0f0f0;
     padding: 5px;
 }
