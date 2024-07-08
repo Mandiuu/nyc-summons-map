@@ -15,6 +15,9 @@ function updateMap() {
     filter = document.getElementById('data-filter').value;
     if (geojson) {
         geojson.setStyle(styleFeature);
+        geojson.eachLayer(function(layer) {
+            onEachFeature(layer.feature, layer);
+        });
     }
     updateLegend();
 }
@@ -115,22 +118,46 @@ function getFeatureCenter(feature) {
     return bounds.getCenter();
 }
 
+// Function to calculate rankings based on the selected filter
+function calculateRankings() {
+    let values = [];
+
+    // Collect values for the current filter
+    for (let precinct in dataLookup) {
+        if (dataLookup.hasOwnProperty(precinct)) {
+            values.push({
+                precinct: precinct,
+                value: dataLookup[precinct][filter]
+            });
+        }
+    }
+
+    // Sort values in descending order
+    values.sort((a, b) => b.value - a.value);
+
+    // Assign rankings
+    let rankings = {};
+    for (let i = 0; i < values.length; i++) {
+        rankings[values[i].precinct] = i + 1; // Ranking starts at 1
+    }
+
+    return rankings;
+}
+
 // Add interactivity to each feature
 function onEachFeature(feature, layer) {
     var precinct = feature.properties.precinct ? String(feature.properties.precinct).trim() : '';
     console.log('Processing precinct:', precinct); // Debugging
     var data = dataLookup[precinct] || {};
+    var rankings = calculateRankings(); // Calculate rankings based on the current filter
 
-    // Create popup content with all categories
+    // Create popup content with the selected filter's data and ranking
+    var value = data[filter] || 'No data';
+    var rank = rankings[precinct] || 'N/A';
+
     var popupContent = '<b>Precinct ' + precinct + '</b><br />' +
-        'Alcohol/Drugs: ' + (data.alcohol_drugs || 'No data') + '<br />' +
-        'Animals: ' + (data.animals || 'No data') + '<br />' +
-        'Bike: ' + (data.bike || 'No data') + '<br />' +
-        'Disobey Business: ' + (data.disobey_business || 'No data') + '<br />' +
-        'Disorderly Behavior: ' + (data.disorderly_behavior || 'No data') + '<br />' +
-        'General Illegal: ' + (data.general_illegal || 'No data') + '<br />' +
-        'Noise: ' + (data.noise || 'No data') + '<br />' +
-        'Weapons: ' + (data.weapons || 'No data');
+        filter.replace(/_/g, ' ') + ': ' + value + '<br />' +
+        'Ranking: ' + rank;
 
     console.log('Popup content:', popupContent); // Debugging
 
