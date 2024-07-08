@@ -79,6 +79,22 @@ function getColor(d, filter) {
                d > 50 ? '#FD8D3C' :
                d > 25 ? '#FEB24C' :
                        '#FFEDA0';
+    } else if (filter === 'noise') {
+        return d > 100 ? '#800026' :
+               d > 75 ? '#BD0026' :
+               d > 50 ? '#E31A1C' :
+               d > 25 ? '#FC4E2A' :
+               d > 10 ? '#FD8D3C' :
+               d > 5 ? '#FEB24C' :
+                       '#FFEDA0';
+    } else if (filter === 'weapons') {
+        return d > 72 ? '#800026' :
+               d > 60 ? '#BD0026' :
+               d > 48 ? '#E31A1C' :
+               d > 36 ? '#FC4E2A' :
+               d > 24 ? '#FD8D3C' :
+               d > 12 ? '#FEB24C' :
+                        '#FFEDA0';
     } else {
         return '#FFEDA0'; // Default color
     }
@@ -268,6 +284,10 @@ function updateLegend() {
         grades = [0, 10, 25, 50, 75, 100, 150];
     } else if (filter === 'disorderly_behavior') {
         grades = [0, 25, 50, 100, 150, 200, 250];
+    } else if (filter === 'noise') {
+        grades = [0, 5, 10, 25, 50, 75, 100];
+    } else if (filter === 'weapons') {
+        grades = [0, 12, 24, 36, 48, 60, 72];
     } else {
         grades = [0, 5, 10, 15, 20, 25, 30];
     }
@@ -294,3 +314,52 @@ legend.onAdd = function (map) {
 };
 
 legend.addTo(map);
+
+// Function to search for an address and find the corresponding precinct
+function searchAddress() {
+    var address = document.getElementById('search-box').value;
+    if (!address) {
+        alert("Please enter an address.");
+        return;
+    }
+
+    // Use the Nominatim API for geocoding
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Geocoding response:", data); // Debugging: Log geocoding response
+            if (data.length === 0) {
+                alert("Address not found.");
+                return;
+            }
+
+            var lat = parseFloat(data[0].lat);
+            var lon = parseFloat(data[0].lon);
+            var latlng = L.latLng(lat, lon);
+
+            console.log("Geocoded coordinates:", latlng); // Debugging: Log coordinates
+
+            // Check which precinct contains the coordinates
+            var found = false;
+            geojson.eachLayer(function(layer) {
+                var bounds = layer.getBounds();
+                console.log("Checking bounds for precinct:", layer.feature.properties.precinct, bounds); // Debugging: Log bounds
+                if (bounds.contains(latlng)) {
+                    found = true;
+                    map.setView(latlng, 14);
+                    L.popup()
+                        .setLatLng(latlng)
+                        .setContent(`<b>Precinct ${layer.feature.properties.precinct}</b>`)
+                        .openOn(map);
+                    return;
+                }
+            });
+
+            if (!found) {
+                alert("Precinct not found for the given address.");
+            }
+        })
+        .catch(error => {
+            console.error("Error geocoding the address:", error);
+        });
+}
