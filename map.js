@@ -5,48 +5,6 @@ var map = L.map('map', {
     layers: [] // No base layers
 });
 
-// GeoJSON data for the boundary line between Queens and Brooklyn
-var boundaryGeoJson = {
-    "type": "FeatureCollection",
-    "features": [
-        {
-            "type": "Feature",
-            "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                    [-73.9504, 40.6342],
-                    [-73.9385, 40.6400],
-                    [-73.9226, 40.6539],
-                    [-73.9179, 40.6697],
-                    [-73.9085, 40.6794],
-                    [-73.8973, 40.6960],
-                    [-73.8865, 40.7038],
-                    [-73.8757, 40.7097],
-                    [-73.8587, 40.7241],
-                    [-73.8512, 40.7343]
-                ]
-            },
-            "properties": {
-                "name": "Queens-Brooklyn Boundary"
-            }
-        }
-    ]
-};
-
-// Function to style the boundary line
-function styleBoundary(feature) {
-    return {
-        color: 'black',
-        weight: 5,
-        opacity: 1
-    };
-}
-
-// Add the boundary line to the map
-L.geoJson(boundaryGeoJson, {
-    style: styleBoundary
-}).addTo(map);
-
 // Data lookup object
 var dataLookup = {};
 var filter = 'alcohol_drugs'; // Default filter set to Alcohol/Drugs
@@ -68,7 +26,6 @@ function updateMap() {
 function styleFeature(feature) {
     var precinct = feature.properties.precinct ? String(feature.properties.precinct).trim() : '';
     var value = dataLookup[precinct] ? dataLookup[precinct][filter] : 0;
-    console.log('Styling feature:', precinct, filter, value); // Debugging
     return {
         fillColor: getColor(value, filter),
         weight: 2,
@@ -210,7 +167,6 @@ function calculateRankings() {
 // Add interactivity to each feature
 function onEachFeature(feature, layer) {
     var precinct = feature.properties.precinct ? String(feature.properties.precinct).trim() : '';
-    console.log('Processing precinct:', precinct); // Debugging
     var data = dataLookup[precinct] || {};
 
     // Add data to feature properties
@@ -262,10 +218,8 @@ fetch('nyc-police-precincts.geojson')
 
 // Load CSV data and create data lookup
 d3.csv('filtered_vaccination_data.csv', d3.autoType).then(function(vaccinationData) {
-    console.log("Loaded CSV Data:", vaccinationData); // Log loaded CSV data
     vaccinationData.forEach(function(d) {
         var precinct = d.precinct ? String(d.precinct).trim() : '';
-        console.log('Processing CSV row:', d); // Debugging
         dataLookup[precinct] = {
             alcohol_drugs: +d['ALCOHOL/DRUGS'] || 0,
             animals: +d.ANIMALS || 0,
@@ -278,14 +232,12 @@ d3.csv('filtered_vaccination_data.csv', d3.autoType).then(function(vaccinationDa
         };
     });
 
-    console.log("Data Lookup Created:", dataLookup); // Debugging: Check data lookup
-
     // Update the map initially
     if (geojson) {
         geojson.setStyle(styleFeature);
     }
 }).catch(function (error) {
-    console.error("Error loading cleaned CSV data:", error); // Debugging: Catch CSV errors
+    console.error("Error loading cleaned CSV data:", error);
 });
 
 // Control to show precinct info on hover
@@ -369,7 +321,6 @@ function searchAddress() {
     fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
         .then(response => response.json())
         .then(data => {
-            console.log("Geocoding response:", data); // Debugging: Log geocoding response
             if (data.length === 0) {
                 alert("Address not found.");
                 return;
@@ -379,13 +330,10 @@ function searchAddress() {
             var lon = parseFloat(data[0].lon);
             var latlng = L.latLng(lat, lon);
 
-            console.log("Geocoded coordinates:", latlng); // Debugging: Log coordinates
-
             // Check which precinct contains the coordinates
             var found = false;
             geojson.eachLayer(function(layer) {
                 var bounds = layer.getBounds();
-                console.log("Checking bounds for precinct:", layer.feature.properties.precinct, bounds); // Debugging: Log bounds
                 if (bounds.contains(latlng)) {
                     found = true;
                     map.setView(latlng, 14);
