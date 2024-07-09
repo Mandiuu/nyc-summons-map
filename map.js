@@ -158,7 +158,7 @@ function onEachFeature(feature, layer) {
     var formattedFilterName = formatFilterName(filter) + ' summons';
     var popupContent = '<b>Precinct ' + precinct + '</b><br />' +
         formattedFilterName + ': ' + value + '<br />' +
-        'Rank: ' + rank;
+        'Rank: ' + rank + ' out of 77';
     layer.on({
         mouseover: function(e) {
             highlightFeature(e);
@@ -310,7 +310,7 @@ function searchAddress() {
             });
 
             if (!found) {
-                alert("Precinct not found for the given address. Try with another one!");
+                alert("Precinct not found for the given address.");
             }
         })
         .catch(error => {
