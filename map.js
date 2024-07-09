@@ -167,7 +167,7 @@ function onEachFeature(feature, layer) {
                 .setLatLng(center)
                 .setContent(popupContent)
                 .openOn(map);
-            gsap.fromTo(popup._container, { scale: 0 }, { scale: 1, duration: 0.5 });
+            gsap.fromTo(popup._container, { scale: 0.95 }, { scale: 1, duration: 0.1 });
         },
         mouseout: function(e) {
             resetHighlight(e);
@@ -310,7 +310,7 @@ function searchAddress() {
             });
 
             if (!found) {
-                alert("Precinct not found for the given address.");
+                alert("Precinct not found for the given address. Try with another one!");
             }
         })
         .catch(error => {
