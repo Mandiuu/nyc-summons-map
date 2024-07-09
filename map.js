@@ -158,7 +158,7 @@ function onEachFeature(feature, layer) {
     var formattedFilterName = formatFilterName(filter) + ' summons';
     var popupContent = '<b>Precinct ' + precinct + '</b><br />' +
         formattedFilterName + ': ' + value + '<br />' +
-        'Ranking: ' + rank;
+        'Rank: ' + rank;
     layer.on({
         mouseover: function(e) {
             highlightFeature(e);
