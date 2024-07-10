@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>Smoothed D3.js Radar Chart</title>
+    <!-- Google fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+    <!-- D3.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <style>
+      body {
+        font-family: 'Open Sans', sans-serif;
+        font-size: 11px;
+        font-weight: 300;
+        fill: #242424;
+        text-align: center;
+        text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+        cursor: default;
+      }
+      .legend {
+        font-family: 'Raleway', sans-serif;
+        fill: #333333;
+      }
+      .tooltip {
+        fill: #333333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="radarChart"></div>
+    <script src="radarChart.js"></script>
+    <script>
+      var margin = {top: 100, right: 100, bottom: 100, left: 100},
+          width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right,
+          height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+
+      var data = [
+        [
+          {axis: "ALCOHOL/DRUGS", value: 0.7},
+          {axis: "ANIMALS", value: 0.1},
+          {axis: "BIKE", value: 0.2},
+          {axis: "DISOBEY BUSINESS AND STREET VENDOR REGULATIONS", value: 0.5},
+          {axis: "DISORDERLY BEHAVIOR", value: 0.6},
+          {axis: "GENERAL ILLEGAL BEHAVIOR", value: 0.4},
+          {axis: "NOISE", value: 0.3},
+          {axis: "WEAPON", value: 0.2}
+        ]
+      ];
+
+      var radarChartOptions = {
+        w: width,
+        h: height,
+        margin: margin,
+        maxValue: 1,
+        levels: 5,
+        roundStrokes: true,
+        color: d3.scale.ordinal().range(["#EDC951","#CC333F","#00A0B0"])
+      };
+
+      RadarChart(".radarChart", data, radarChartOptions);
+    </script>
+  </body>
+</html>

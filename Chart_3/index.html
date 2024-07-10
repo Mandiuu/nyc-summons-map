@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<div id="my_dataviz"></div>
+
+<style>
+  body {
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .axis-label {
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .legend text {
+    font-family: 'Roboto', sans-serif;
+  }
+</style>
+
+<script>
+
+var margin = {top: 10, right: 30, bottom: 50, left: 70},  
+    width = 460 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+d3.csv("change_comma.csv", function(error, data) {
+  if (error) throw error;
+
+  data.forEach(function(d) {
+    d.INCOME = +d.INCOME.trim();
+    d.SUMMONS_TOTAL = +d["SUMMONS TOTAL "].trim();  
+    d.borough = d.borough.trim();
+  });
+
+  var boroughs = [...new Set(data.map(d => d.borough))];
+
+  var color = d3.scaleOrdinal()
+    .domain(boroughs)
+    .range(d3.schemeCategory10);
+
+  var x = d3.scaleLinear()
+    .domain([d3.min(data, function(d) { return d.INCOME; }) - 1000, d3.max(data, function(d) { return d.INCOME; }) + 1000])
+    .range([ 0, width ]);
+  var xAxis = svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
+
+  var y = d3.scaleLinear()
+    .domain([d3.min(data, function(d) { return d.SUMMONS_TOTAL; }) - 10, d3.max(data, function(d) { return d.SUMMONS_TOTAL; }) + 10])
+    .range([ height, 0]);
+  var yAxis = svg.append("g")
+    .call(d3.axisLeft(y));
+
+  svg.append('g')
+    .selectAll("circle")
+    .data(data)
+    .enter()
+    .append("circle")
+      .attr("cx", function (d) { return x(d.INCOME); } )
+      .attr("cy", function (d) { return y(d.SUMMONS_TOTAL); } )
+      .attr("r", 4)
+      .style("fill", function(d) { return color(d.borough); });
+
+
+  svg.append("text")
+    .attr("class", "x axis-label")
+    .attr("x", width / 2)
+    .attr("y", height + margin.bottom - 10)  
+    .style("text-anchor", "middle")
+    .text("Income");
+
+
+  svg.append("text")
+    .attr("class", "y axis-label")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -margin.left + 20)  
+    .style("text-anchor", "middle")
+    .text("Summons Total");
+
+
+  var legend = svg.selectAll(".legend")
+      .data(color.domain())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+
+});
+
+</script>
