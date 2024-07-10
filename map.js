@@ -187,7 +187,7 @@ fetch('nyc-police-precincts.geojson')
     })
     .catch(error => console.error('Error loading GeoJSON data:', error));
 
-fetch('filtered_vaccination_data.csv')
+fetch('filtered.csv')
     .then(response => response.text())
     .then(csvText => {
         const data = Papa.parse(csvText, { header: true, dynamicTyping: true }).data;
