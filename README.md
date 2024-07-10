@@ -11,7 +11,8 @@ Fetch API
 GSAP
 Nominatim
 
-*I struggle with:*
+*I struggle with*
+
 One of the key challenges I've encountered is getting the addresses to consistently appear on the map. This functionality is still not working as seamlessly as I'd like, and I'm seeking your feedback to help improve it.
 I filtered the data according to each category and realized that some were strings and others numbers.
 The Popup management
