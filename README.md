@@ -1,5 +1,7 @@
 # The map of NYC 2023 summons 
 
+Find the precinct with more noise in New York City; https://mandiuu.github.io/nyc-summons-map/
+
 *Methodology*
 
 I started this story after living in New York for a couple of months and realizing that my biggest fear was not being robbed but encountering someone under the influence of drugs and alcohol or making more noise than I am used to. That's how I found the summons related to quality of life and fines for civil offenses.
