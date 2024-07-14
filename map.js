@@ -1,3 +1,4 @@
+// Initialize the map
 var map = L.map('map', {
     center: [40.7128, -74.0060],
     zoom: 11,
@@ -125,7 +126,6 @@ function getFeatureCenter(feature) {
     var bounds = L.geoJson(feature).getBounds();
     return bounds.getCenter();
 }
-
 function calculateRankings() {
     let values = [];
     for (let precinct in dataLookup) {
@@ -156,9 +156,10 @@ function onEachFeature(feature, layer) {
     var value = data[filter] || 'No data';
     var rank = rankings[precinct] || 'N/A';
     var formattedFilterName = formatFilterName(filter) + ' summons';
-    var popupContent = '<b>Precinct ' + precinct + '</b><br />' +
-        formattedFilterName + ': ' + value + '<br />' +
-        'Rank: ' + rank + ' out of 77';
+    var popupContent = '<b>Precinct ' + precinct + ' / ' + (data.borough || 'No data') + '</b><br />' +
+        '<b>Neighborhood: </b>' + (data.neighborhood || 'No data') + '<br />' +
+        '<b>' + formattedFilterName + ': </b>' + value + '<br />' +
+        '<b>Rank: </b>' + rank + ' out of 77';
     layer.on({
         mouseover: function(e) {
             highlightFeature(e);
@@ -187,7 +188,7 @@ fetch('nyc-police-precincts.geojson')
     })
     .catch(error => console.error('Error loading GeoJSON data:', error));
 
-fetch('filtered.csv')
+    fetch('filtered.csv')
     .then(response => response.text())
     .then(csvText => {
         const data = Papa.parse(csvText, { header: true, dynamicTyping: true }).data;
@@ -201,7 +202,9 @@ fetch('filtered.csv')
                 disorderly_behavior: d['DISORDERLY_BEHAVIOR'] || 0,
                 general_illegal: d['GENERAL_ILLEGAL_BEHAVIOR'] || 0,
                 noise: d.NOISE || 0,
-                weapons: d.WEAPONS || 0
+                weapons: d.WEAPONS || 0,
+                neighborhood: d.neighborhood || 'No data',
+                borough: d.borough || 'No data' // Add this line to include borough
             };
         });
         if (geojson) {
@@ -210,110 +213,111 @@ fetch('filtered.csv')
     })
     .catch(error => console.error("Error loading cleaned CSV data:", error));
 
-var info = L.control();
+    var info = L.control();
 
-info.onAdd = function(map) {
-    this._div = L.DomUtil.create('div', 'info');
-    this.update();
-    return this._div;
-};
+    info.onAdd = function(map) {
+        this._div = L.DomUtil.create('div', 'info');
+        this.update();
+        return this._div;
+    };
 
-info.update = function(props) {
-    this._div.innerHTML = '<h4>NYC Data</h4>' + (props ?
-        '<b>Precinct ' + props.precinct + '</b><br />' +
-        'Alcohol/Drugs summons: ' + (props.alcohol_drugs || 'No data') + '<br />' +
-        'Animals summons: ' + (props.animals || 'No data') + '<br />' +
-        'Bike summons: ' + (props.bike || 'No data') + '<br />' +
-        'Disobey Business summons: ' + (props.disobey_business || 'No data') + '<br />' +
-        'Disorderly Behavior summons: ' + (props.disorderly_behavior || 'No data') + '<br />' +
-        'General Illegal summons: ' + (props.general_illegal || 'No data') + '<br />' +
-        'Noise summons: ' + (props.noise || 'No data') + '<br />' +
-        'Weapons summons: ' + (props.weapons || 'No data')
-        : 'Hover over a precinct');
-};
-
-info.addTo(map);
-
-function updateLegend() {
-    var grades;
-    if (filter === 'alcohol_drugs') {
-        grades = [0, 10, 25, 50, 100, 150, 200];
-    } else if (filter === 'animals') {
-        grades = [0, 5, 10, 25, 50, 75, 100];
-    } else if (filter === 'bike') {
-        grades = [0, 5, 10, 20, 30, 40, 50];
-    } else if (filter === 'disobey_business') {
-        grades = [0, 10, 25, 50, 75, 100, 150];
-    } else if (filter === 'disorderly_behavior') {
-        grades = [0, 25, 50, 100, 150, 200, 250];
-    } else if (filter === 'noise') {
-        grades = [0, 5, 10, 25, 50, 75, 100];
-    } else if (filter === 'weapons') {
-        grades = [0, 12, 24, 36, 48, 60, 72];
-    } else {
-        grades = [0, 5, 10, 15, 20, 25, 30];
-    }
-
-    var labels = [];
-
-    for (var i = 0; i < grades.length; i++) {
-        labels.push(
-            '<i style="background:' + getColor(grades[i] + 1, filter) + '"></i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+')
-        );
-    }
-
-    document.querySelector('.info.legend').innerHTML = labels.join('');
-}
-
-var legend = L.control({position: 'bottomright'});
-
-legend.onAdd = function (map) {
-    var div = L.DomUtil.create('div', 'info legend');
-    updateLegend();
-    return div;
-};
-
-legend.addTo(map);
-
-function searchAddress() {
-    var address = document.getElementById('search-box').value;
-    if (!address) {
-        alert("Please enter an address.");
-        return;
-    }
-
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.length === 0) {
-                alert("Address not found.");
-                return;
+            info.update = function(props) {
+                this._div.innerHTML = '<h4>NYC Data</h4>' + (props ?
+                    '<b>Precinct ' + props.precinct + '</b><br />' +
+                    'Alcohol/Drugs summons: ' + (props.alcohol_drugs || 'No data') + '<br />' +
+                    'Animals summons: ' + (props.animals || 'No data') + '<br />' +
+                    'Bike summons: ' + (props.bike || 'No data') + '<br />' +
+                    'Disobey Business summons: ' + (props.disobey_business || 'No data') + '<br />' +
+                    'Disorderly Behavior summons: ' + (props.disorderly_behavior || 'No data') + '<br />' +
+                    'General Illegal summons: ' + (props.general_illegal || 'No data') + '<br />' +
+                    'Noise summons: ' + (props.noise || 'No data') + '<br />' +
+                    'Weapons summons: ' + (props.weapons || 'No data')
+                    : 'Hover over a precinct');
+            };
+            
+            info.addTo(map);
+            
+            function updateLegend() {
+                var grades;
+                if (filter === 'alcohol_drugs') {
+                    grades = [0, 10, 25, 50, 100, 150, 200];
+                } else if (filter === 'animals') {
+                    grades = [0, 5, 10, 25, 50, 75, 100];
+                } else if (filter === 'bike') {
+                    grades = [0, 5, 10, 20, 30, 40, 50];
+                } else if (filter === 'disobey_business') {
+                    grades = [0, 10, 25, 50, 75, 100, 150];
+                } else if (filter === 'disorderly_behavior') {
+                    grades = [0, 25, 50, 100, 150, 200, 250];
+                } else if (filter === 'noise') {
+                    grades = [0, 5, 10, 25, 50, 75, 100];
+                } else if (filter === 'weapons') {
+                    grades = [0, 12, 24, 36, 48, 60, 72];
+                } else {
+                    grades = [0, 5, 10, 15, 20, 25, 30];
+                }
+            
+                var labels = [];
+            
+                for (var i = 0; i < grades.length; i++) {
+                    labels.push(
+                        '<i style="background:' + getColor(grades[i] + 1, filter) + '"></i> ' +
+                        grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+')
+                    );
+                }
+            
+                document.querySelector('.info.legend').innerHTML = labels.join('');
             }
-
-            var lat = parseFloat(data[0].lat);
-            var lon = parseFloat(data[0].lon);
-            var latlng = L.latLng(lat, lon);
-
-            var found = false;
-            geojson.eachLayer(function(layer) {
-                var bounds = layer.getBounds();
-                if (bounds.contains(latlng)) {
-                    found = true;
-                    map.setView(latlng, 14);
-                    L.popup()
-                        .setLatLng(latlng)
-                        .setContent(`<b>Precinct ${layer.feature.properties.precinct}</b>`)
-                        .openOn(map);
+            
+            var legend = L.control({position: 'bottomright'});
+            
+            legend.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                updateLegend();
+                return div;
+            };
+            
+            legend.addTo(map);
+            
+            function searchAddress() {
+                var address = document.getElementById('search-box').value;
+                if (!address) {
+                    alert("Please enter an address.");
                     return;
                 }
-            });
-
-            if (!found) {
-                alert("Precinct not found for the given address.");
+            
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length === 0) {
+                            alert("Address not found.");
+                            return;
+                        }
+            
+                        var lat = parseFloat(data[0].lat);
+                        var lon = parseFloat(data[0].lon);
+                        var latlng = L.latLng(lat, lon);
+            
+                        var found = false;
+                        geojson.eachLayer(function(layer) {
+                            var bounds = layer.getBounds();
+                            if (bounds.contains(latlng)) {
+                                found = true;
+                                map.setView(latlng, 14);
+                                L.popup()
+                                    .setLatLng(latlng)
+                                    .setContent(`<b>Precinct ${layer.feature.properties.precinct}</b>`)
+                                    .openOn(map);
+                                return;
+                            }
+                        });
+            
+                        if (!found) {
+                            alert("Precinct not found for the given address. Please try with another one!");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error geocoding the address:", error);
+                    });
             }
-        })
-        .catch(error => {
-            console.error("Error geocoding the address:", error);
-        });
-}
+                
